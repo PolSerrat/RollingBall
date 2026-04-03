@@ -13,13 +13,17 @@ public class PlayerController : MonoBehaviour
     private float movementY;
     public float speed = 0;
     public TextMeshProUGUI countText;
+    public TextMeshProUGUI countHearts;
+    private int hearts;
     public GameObject winTextObject;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         count = 0;
+        hearts = 3;
         SetCountText();
+        SetCountHearts();
         winTextObject.SetActive(false);
     }
 
@@ -42,7 +46,13 @@ public class PlayerController : MonoBehaviour
         if (count >= 12)
         {
             winTextObject.SetActive(true);
+            Destroy(GameObject.FindGameObjectWithTag("Enemy"));
         }
+    }
+
+    void SetCountHearts()
+    {
+        countHearts.text = "Hearts: " + hearts.ToString();
     }
 
     void FixedUpdate()
@@ -58,19 +68,26 @@ public class PlayerController : MonoBehaviour
         {
             other.gameObject.SetActive(false);
             count = count + 1;
+            
         }
         SetCountText();
+        
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            // Destroy the current object
-            Destroy(gameObject);
-            // Update the winText to display "You Lose!"
-            winTextObject.gameObject.SetActive(true);
-            winTextObject.GetComponent<TextMeshProUGUI>().text = "You Lose!";
+            hearts = hearts - 1;
+            SetCountHearts();
+            if (1 > hearts)
+            {
+                // Destroy the current object
+                Destroy(gameObject);
+                // Update the winText to display "You Lose!"
+                winTextObject.gameObject.SetActive(true);
+                winTextObject.GetComponent<TextMeshProUGUI>().text = "You Lose!";
+            }
         }
     }
 }
